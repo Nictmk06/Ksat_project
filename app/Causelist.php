@@ -15,6 +15,7 @@ class Causelist extends Model
 	public static function getCauselistdate($causelistcode)
 	{
 		/*$value = DB::select("select c.causelistcode,a.applicationid,l.listpurpose,c.enteredfrom,a.connectedcase,c.causelistsrno from causelistappltemp as c left join application as a on a.applicationid=c.applicationid  order by c.causelistcode desc" );
+		return $value;*/
 		$value = DB::select("select c.causelistcode,a.applicationid,l.listpurpose,c.enteredfrom,a.connectedcase,c.iaflag,c.causelistsrno,ct.courthallno from causelistappltemp as c left join application as a on 
 		a.applicationid=c.applicationid left join listpurpose as l
 		on l.purposecode=c.purposecode 
