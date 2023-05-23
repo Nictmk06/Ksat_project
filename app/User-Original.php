@@ -1,0 +1,109 @@
+<?php
+
+namespace App;
+
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+//namespace App;
+use Illuminate\Support\Facades\DB;
+
+use Illuminate\Database\Eloquent\Model;
+class User extends Authenticatable
+{
+    use Notifiable;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'name', 'email', 'password',
+    ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+    ];
+    
+    public function verifyLoginDetails($password,$username,$establishCode)
+    {
+       
+        try {
+        $users = DB::table('userdetails')
+                ->join('userpassword', 'userpassword.userid', '=', 'userdetails.userid')
+                ->where('userdetails.userid',$username)
+                ->where('userpassword.password',$password)
+                ->where('userdetails.establishcode',$establishCode)
+                ->exists();
+        return $users;
+        }catch(\Exception $e){
+            return false;
+            }
+
+    }
+    public function getUserName($password,$username,$establishCode)
+    {
+        try {
+        $username = DB::table('userdetails')
+                ->join('userpassword', 'userpassword.userid', '=', 'userdetails.userid')
+                ->where('userdetails.userid',$username)
+                ->where('userpassword.password',$password)
+                ->where('userdetails.establishcode',$establishCode)
+                ->select('username')
+                ->get();
+        return $username;
+          }catch(\Exception $e){
+            return false;
+            }
+
+    }
+
+     public function getUserData($username,$establishCode)
+    {
+        try {
+        $userdata = DB::table('userdetails')
+                ->where('userdetails.userid',$username)
+                ->where('userdetails.establishcode',$establishCode)
+                ->select('*')
+                ->get();
+        return $userdata;
+          }catch(\Exception $e){
+            return false;
+            }
+
+    }
+
+     public static function hasModule($modulename)
+     {
+       try {
+           $username=$request->session()->get('username');
+        $module = DB::table('userrole')
+                ->join('rolemodule', 'userrole.roleid', '=', 'rolemodule.roleid')
+                ->join('module', 'module.modulecode', '=', 'rolemodule.roleid')
+                ->where('userdetails.userid',$username)
+                ->where('module.modulename',$modulename)
+              ->get();
+              print_r($module);
+        return $module;
+          }catch(\Exception $e){
+            return false;
+            }
+    
+
+     }
+}
